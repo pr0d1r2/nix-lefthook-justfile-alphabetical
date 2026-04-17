@@ -1,0 +1,12 @@
+---
+pre-commit:
+  commands:
+    justfile-alphabetical:
+      glob: "justfile"
+      run: timeout ${LEFTHOOK_JUSTFILE_ALPHABETICAL_TIMEOUT:-30} lefthook-justfile-alphabetical {staged_files}
+
+pre-push:
+  commands:
+    justfile-alphabetical:
+      glob: "justfile"
+      run: timeout ${LEFTHOOK_JUSTFILE_ALPHABETICAL_TIMEOUT:-30} lefthook-justfile-alphabetical {push_files}
