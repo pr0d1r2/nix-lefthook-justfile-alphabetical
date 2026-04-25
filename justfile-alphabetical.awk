@@ -9,5 +9,6 @@
     name = $0
     sub(/:.*/, "", name)
     sub(/[[:space:]].*/, "", name)
+    if (name == "default") next
     print name
 }

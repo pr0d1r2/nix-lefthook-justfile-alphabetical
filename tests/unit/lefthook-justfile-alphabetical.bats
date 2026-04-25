@@ -81,6 +81,21 @@ EOF
     assert_success
 }
 
+@test "skips default recipe in ordering check" {
+    cat > "$TEST_TEMP/justfile" << 'EOF'
+default:
+    just --list
+
+alpha:
+    bash scripts/alpha.sh
+
+beta:
+    bash scripts/beta.sh
+EOF
+    run lefthook-justfile-alphabetical "$TEST_TEMP/justfile"
+    assert_success
+}
+
 @test "accepts empty justfile" {
     touch "$TEST_TEMP/justfile"
     run lefthook-justfile-alphabetical "$TEST_TEMP/justfile"
