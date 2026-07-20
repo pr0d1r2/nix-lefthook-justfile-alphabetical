@@ -101,3 +101,30 @@ EOF
     run lefthook-justfile-alphabetical "$TEST_TEMP/justfile"
     assert_success
 }
+
+@test "ignores comment lines" {
+    cat > "$TEST_TEMP/justfile" << 'EOF'
+# This is a comment
+alpha:
+    bash scripts/alpha.sh
+
+# Another comment
+beta:
+    bash scripts/beta.sh
+EOF
+    run lefthook-justfile-alphabetical "$TEST_TEMP/justfile"
+    assert_success
+}
+
+@test "detects out-of-order parameterized recipes" {
+    cat > "$TEST_TEMP/justfile" << 'EOF'
+deploy env region:
+    bash scripts/deploy.sh
+
+build target:
+    bash scripts/build.sh
+EOF
+    run lefthook-justfile-alphabetical "$TEST_TEMP/justfile"
+    assert_failure
+    assert_output --partial "out of order"
+}
