@@ -63,8 +63,8 @@ local paths, zero private refs.
   git-conflict-markers, git-no-local-paths, nix-flake-check
 - V16: Flattened flake — no `nix-dev-shell-agentic`; each lint wrapper built
   inline from its `flake = false` `-src` input; `flake.lock` minimal
-- V17: `file_size_limits.yml` raises `nix: 10240` for the inline-wrapper flake
-  and `md: 8192` for this spec
+- V17: `file_size_limits.yml` raises `lock: 131072` for the generated flake
+  lock, `nix: 10240` for the inline-wrapper flake, and `md: 8192` for this spec
 
 ## §T Tasks
 
