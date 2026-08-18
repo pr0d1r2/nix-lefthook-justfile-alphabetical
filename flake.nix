@@ -26,7 +26,8 @@
       lib = set-and-setting.lib // {
         # nixpkgs' sourceByRegex now requires a list of regexes, while the
         # pinned actionlint helper still supplies one scalar regex.
-        mkActionlintCheck = args:
+        mkActionlintCheck =
+          args:
           set-and-setting.lib.mkLefthookCheck {
             inherit (args) pkgs;
             src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
@@ -38,7 +39,10 @@
               '';
             };
             name = args.name or "actionlint";
-            suffices = [ ".yml" ".yaml" ];
+            suffices = [
+              ".yml"
+              ".yaml"
+            ];
             checkFlag = "";
           };
         checksFor =
@@ -70,7 +74,8 @@
               mkFileSizeCheckCheck
               mkLinterCoverageCheck
               ;
-            mkActionlintCheck = args:
+            mkActionlintCheck =
+              args:
               set-and-setting.lib.mkLefthookCheck {
                 inherit (args) pkgs;
                 src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
@@ -82,7 +87,10 @@
                   '';
                 };
                 name = args.name or "actionlint";
-                suffices = [ ".yml" ".yaml" ];
+                suffices = [
+                  ".yml"
+                  ".yaml"
+                ];
                 checkFlag = "";
               };
           };

@@ -1,0 +1,19 @@
+# Files without a configured linter class are tracked here with their
+# corresponding issue/task ticket, as required by linter-coverage-check.
+exemptions:
+  - class: ".editorconfig"
+    ticket: 1
+  - class: ".envrc"
+    ticket: 2
+  - class: ".gitignore"
+    ticket: 3
+  - class: "LICENSE"
+    ticket: 4
+  - class: "flake.lock"
+    ticket: 5
+  - class: "tests/unit/app-confirm.bats"
+    ticket: 6
+  - class: "tests/unit/dev.bats"
+    ticket: 7
+  - class: "tests/unit/lefthook-justfile-alphabetical.bats"
+    ticket: 8
