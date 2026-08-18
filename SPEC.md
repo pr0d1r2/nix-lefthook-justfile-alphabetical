@@ -68,6 +68,12 @@ local paths, zero private refs.
 
 ## §T Tasks
 
+## §B Bugs
+
+| id | date | cause | fix |
+| --- | --- | --- | --- |
+| B1 | 2026-08-18 | The pinned actionlint helper passed a scalar workflow regex to nixpkgs' source filter, which now requires a list. | Override the actionlint check locally with the list-form regex while retaining workflow validation. |
+
 | id | status | task | cites |
 | --- | --- | --- | --- |
 | T1 | x | core enforcer: filter justfiles, awk-extract, assert sorted, exit 1 on gap | V1,V2,V3,V4,V9,I.cli |

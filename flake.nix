@@ -23,6 +23,70 @@
     }:
     set-and-setting.lib.mkConsumerFlake {
       inherit self nixpkgs set-and-setting;
+      lib = set-and-setting.lib // {
+        # nixpkgs' sourceByRegex now requires a list of regexes, while the
+        # pinned actionlint helper still supplies one scalar regex.
+        mkActionlintCheck = args:
+          set-and-setting.lib.mkLefthookCheck {
+            inherit (args) pkgs;
+            src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
+            wrapper = args.pkgs.writeShellApplication {
+              name = "actionlint-check";
+              runtimeInputs = [ args.pkgs.actionlint ];
+              text = ''
+                actionlint "$@"
+              '';
+            };
+            name = args.name or "actionlint";
+            suffices = [ ".yml" ".yaml" ];
+            checkFlag = "";
+          };
+        checksFor =
+          {
+            pkgs,
+            src,
+            fragments,
+          }:
+          import "${set-and-setting}/lib/checks-for.nix" {
+            inherit pkgs src fragments;
+            inherit (set-and-setting.lib)
+              mkNixfmtCheck
+              mkShfmtCheck
+              mkTrailingWhitespaceCheck
+              mkMissingFinalNewlineCheck
+              mkEditorconfigCheckerCheck
+              mkShellcheckCheck
+              mkNoShellFunctionsCheck
+              mkAsciiOnlyCheck
+              mkTyposCheck
+              mkStatixCheck
+              mkDeadnixCheck
+              mkNixNoEmbeddedShellCheck
+              mkFlakeManifestCheck
+              mkGitleaksCheck
+              mkGitConflictMarkersCheck
+              mkGitNoLocalPathsCheck
+              mkExecutePermissionsCheck
+              mkFileSizeCheckCheck
+              mkLinterCoverageCheck
+              ;
+            mkActionlintCheck = args:
+              set-and-setting.lib.mkLefthookCheck {
+                inherit (args) pkgs;
+                src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
+                wrapper = args.pkgs.writeShellApplication {
+                  name = "actionlint-check";
+                  runtimeInputs = [ args.pkgs.actionlint ];
+                  text = ''
+                    actionlint "$@"
+                  '';
+                };
+                name = args.name or "actionlint";
+                suffices = [ ".yml" ".yaml" ];
+                checkFlag = "";
+              };
+          };
+      };
       fragments = [
         "base"
         "actions"
