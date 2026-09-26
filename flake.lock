@@ -557,8 +557,6 @@
         "nix-lefthook-unicode-lint-src": "nix-lefthook-unicode-lint-src",
         "nix-lefthook-yamllint-src": "nix-lefthook-yamllint-src",
         "nixpkgs": [
-          "set-and-setting",
-          "nixpkgs-lock",
           "nixpkgs"
         ],
         "nixpkgs-lock": [
