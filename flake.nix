@@ -128,7 +128,10 @@
     // {
       # The unit tests call the wrapper by name, and mkConsumerFlake does
       # not add consumer packages to the shell, so every devShell must put
-      # the packaged wrapper on PATH.
+      # the packaged wrapper on PATH. The pinned standard's
+      # lefthook-actionlint wrapper lacks actionlint in its runtimeInputs
+      # (fixed upstream), so the pre-push actionlint hook needs it here
+      # until the set-and-setting pin moves past that fix.
       devShells =
         builtins.mapAttrs
           (
@@ -136,7 +139,10 @@
             builtins.mapAttrs (
               _name: shell:
               shell.overrideAttrs (old: {
-                nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ self.packages.${system}.default ];
+                nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [
+                  self.packages.${system}.default
+                  nixpkgs.legacyPackages.${system}.actionlint
+                ];
               })
             ) shells
           )
