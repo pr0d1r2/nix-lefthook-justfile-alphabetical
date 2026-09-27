@@ -160,6 +160,22 @@
         "type": "github"
       }
     },
+    "nix-lefthook-gawk-lint-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790326386,
+        "narHash": "sha256-yQBqh6l5g2Wt4Uvd8KVFFbwxM8j9OrKcBAJqEDFm8+A=",
+        "owner": "pr0d1r2",
+        "repo": "nix-lefthook-gawk-lint",
+        "rev": "b449624783d53e70c084c11b7ed0a8633d356f26",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pr0d1r2",
+        "repo": "nix-lefthook-gawk-lint",
+        "type": "github"
+      }
+    },
     "nix-lefthook-git-conflict-markers-src": {
       "flake": false,
       "locked": {
@@ -600,6 +616,7 @@
         "nix-lefthook-editorconfig-checker-src": "nix-lefthook-editorconfig-checker-src",
         "nix-lefthook-execute-permissions-src": "nix-lefthook-execute-permissions-src",
         "nix-lefthook-file-size-check-src": "nix-lefthook-file-size-check-src",
+        "nix-lefthook-gawk-lint-src": "nix-lefthook-gawk-lint-src",
         "nix-lefthook-git-conflict-markers-src": "nix-lefthook-git-conflict-markers-src",
         "nix-lefthook-git-no-local-paths-src": "nix-lefthook-git-no-local-paths-src",
         "nix-lefthook-gitleaks-src": "nix-lefthook-gitleaks-src",
@@ -632,11 +649,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790225997,
-        "narHash": "sha256-R2SE3Hfx8+0qwgaFvebCrd0/K/ZpLX1jbZWLT0qMy78=",
+        "lastModified": 1790488162,
+        "narHash": "sha256-D7mdjVgdczhP/QONUZdOrqIb9pYkJ3WYwaky7+hlt1E=",
         "owner": "pr0d1r2",
         "repo": "set-and-setting",
-        "rev": "34fb8b577dbd50397ac84b135534667328baced2",
+        "rev": "5bbd04c9200687d1b0d8f46cb832ffe332d4ebd1",
         "type": "github"
       },
       "original": {

@@ -14,3 +14,5 @@ All notable changes to this project are documented here.
 - Bump the set-and-setting pin so CI, which runs the current standard,
   finds the bats libraries; drop the actionlint overrides the new standard
   no longer needs.
+- Declare the `awk` and `bats` fragments now that set-and-setting wires
+  `awk` (set-and-setting#548), so confirm matches the detected fragments.

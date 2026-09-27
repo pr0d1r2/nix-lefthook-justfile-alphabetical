@@ -54,7 +54,9 @@
             "actions"
             "nix"
             "shell"
+            "awk"
             "ascii"
+            "bats"
             "markdown"
             "yaml"
           ];
