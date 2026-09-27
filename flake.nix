@@ -1,5 +1,5 @@
 {
-  description = "CHANGEME";
+  description = "Lefthook-compatible justfile alphabetical check";
 
   nixConfig = {
     extra-substituters = [ "https://pr0d1r2.cachix.org" ];
@@ -10,8 +10,11 @@
     nixpkgs-lock.url = "github:pr0d1r2/nixpkgs-lock";
     nixpkgs.follows = "nixpkgs-lock/nixpkgs";
 
-    set-and-setting.url = "github:pr0d1r2/set-and-setting";
-    set-and-setting.inputs.nixpkgs-lock.follows = "nixpkgs-lock";
+    set-and-setting = {
+      url = "github:pr0d1r2/set-and-setting";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-lock.follows = "nixpkgs-lock";
+    };
   };
 
   outputs =
@@ -21,89 +24,59 @@
       set-and-setting,
       ...
     }:
-    set-and-setting.lib.mkConsumerFlake {
-      inherit self nixpkgs set-and-setting;
-      lib = set-and-setting.lib // {
-        # nixpkgs' sourceByRegex now requires a list of regexes, while the
-        # pinned actionlint helper still supplies one scalar regex.
-        mkActionlintCheck =
-          args:
-          set-and-setting.lib.mkLefthookCheck {
-            inherit (args) pkgs;
-            src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
-            wrapper = args.pkgs.writeShellApplication {
-              name = "actionlint-check";
-              runtimeInputs = [ args.pkgs.actionlint ];
+    (
+      consumer:
+      consumer
+      // {
+        # The unit tests call the wrapper by name, and the standard's
+        # pre-push bats-unit hook runs them inside the devShell.
+        # mkConsumerFlake does not add consumer packages to the shell, so
+        # put the packaged wrapper first on PATH.
+        devShells = builtins.mapAttrs (
+          system: shells:
+          builtins.mapAttrs (
+            _name: shell:
+            shell.overrideAttrs (old: {
+              nativeBuildInputs = [
+                self.packages.${system}.default
+              ]
+              ++ (old.nativeBuildInputs or [ ]);
+            })
+          ) shells
+        ) consumer.devShells;
+      }
+    )
+      (
+        set-and-setting.lib.mkConsumerFlake {
+          inherit self nixpkgs set-and-setting;
+          fragments = [
+            "base"
+            "actions"
+            "nix"
+            "shell"
+            "awk"
+            "ascii"
+            "bats"
+            "markdown"
+            "yaml"
+          ];
+          src = ./.;
+          extraPackages = pkgs: {
+            default = pkgs.writeShellApplication {
+              name = "lefthook-justfile-alphabetical";
+              runtimeInputs = [
+                pkgs.gawk
+                pkgs.coreutils
+              ];
               text = ''
-                actionlint "$@"
-              '';
+                AWK_PROGRAM="${./justfile-alphabetical.awk}"
+              ''
+              + builtins.readFile ./lefthook-justfile-alphabetical.sh;
             };
-            name = args.name or "actionlint";
-            suffices = [
-              ".yml"
-              ".yaml"
-            ];
-            checkFlag = "";
           };
-        checksFor =
-          {
-            pkgs,
-            src,
-            fragments,
-          }:
-          import "${set-and-setting}/lib/checks-for.nix" {
-            inherit pkgs src fragments;
-            inherit (set-and-setting.lib)
-              mkNixfmtCheck
-              mkShfmtCheck
-              mkTrailingWhitespaceCheck
-              mkMissingFinalNewlineCheck
-              mkEditorconfigCheckerCheck
-              mkShellcheckCheck
-              mkNoShellFunctionsCheck
-              mkAsciiOnlyCheck
-              mkTyposCheck
-              mkStatixCheck
-              mkDeadnixCheck
-              mkNixNoEmbeddedShellCheck
-              mkFlakeManifestCheck
-              mkGitleaksCheck
-              mkGitConflictMarkersCheck
-              mkGitNoLocalPathsCheck
-              mkExecutePermissionsCheck
-              mkFileSizeCheckCheck
-              mkLinterCoverageCheck
-              ;
-            mkActionlintCheck =
-              args:
-              set-and-setting.lib.mkLefthookCheck {
-                inherit (args) pkgs;
-                src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
-                wrapper = args.pkgs.writeShellApplication {
-                  name = "actionlint-check";
-                  runtimeInputs = [ args.pkgs.actionlint ];
-                  text = ''
-                    actionlint "$@"
-                  '';
-                };
-                name = args.name or "actionlint";
-                suffices = [
-                  ".yml"
-                  ".yaml"
-                ];
-                checkFlag = "";
-              };
+          extraChecks = pkgs: {
+            package = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
           };
-      };
-      fragments = [
-        "base"
-        "actions"
-        "nix"
-        "shell"
-        "ascii"
-        "markdown"
-        "yaml"
-      ];
-      src = ./.;
-    };
+        }
+      );
 }
