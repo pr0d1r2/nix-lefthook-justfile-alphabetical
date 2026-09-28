@@ -25,6 +25,22 @@ setup() {
     assert_output "lefthook-justfile-alphabetical"
 }
 
+@test "default package check builds and runs the wrapper" {
+    run --separate-stderr nix --extra-experimental-features 'nix-command flakes' build \
+        "$REPO_ROOT#checks.x86_64-linux.package" \
+        --no-link
+    assert_success
+
+    run --separate-stderr nix --extra-experimental-features 'nix-command flakes' build \
+        "$REPO_ROOT#default" \
+        --no-link
+    assert_success
+
+    run --separate-stderr nix --extra-experimental-features 'nix-command flakes' run \
+        "$REPO_ROOT#default" --
+    assert_success
+}
+
 @test "actionlint check includes GitHub workflows" {
     run --separate-stderr nix --extra-experimental-features 'nix-command flakes' derivation show \
         "$REPO_ROOT#checks.x86_64-linux.actionlint"
