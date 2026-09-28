@@ -54,10 +54,13 @@ missed.
 
 ## The guardrails are this repository's own
 
-This repository is gated by `lefthook.yml`. Before a machine-authored branch is
-pushed, it is run against that gate — the same checks a human gets on
-`git commit`, in the same environment continuous integration uses. A change the
-gate refuses is not pushed and no pull request is opened for it.
+This repository is gated by the generated `lefthook.yml`. The devShell builds it
+from the checked-in lint configuration before installing the hooks; the
+repository also publishes `lefthook-remote.yml` for consumers. Before a
+machine-authored branch is pushed, it is run against that gate — the same
+checks a human gets on `git commit`, in the same environment continuous
+integration uses. A change the gate refuses is not pushed and no pull request
+is opened for it.
 
 Run it yourself:
 
