@@ -24,3 +24,13 @@ setup() {
     assert_success
     assert_output "lefthook-justfile-alphabetical"
 }
+
+@test "actionlint check includes GitHub workflows" {
+    run --separate-stderr nix --extra-experimental-features 'nix-command flakes' derivation show \
+        "$REPO_ROOT#checks.x86_64-linux.actionlint"
+    assert_success
+
+    check_files="$(printf '%s\n' "$output" | jq -r '.. | objects | .env? | select(.CHECK_FILES?) | .CHECK_FILES' | head -n1)"
+    assert [ -n "$check_files" ]
+    assert [ -f "$check_files/.github/workflows/ci.yml" ]
+}
