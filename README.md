@@ -6,13 +6,24 @@
 > what it may not, and what to check before trusting anything in this tree.
 <!-- hallucinogen:autonomy-disclaimer end -->
 
-[![CI](https://github.com/pr0d1r2/nix-lefthook-justfile-alphabetical/actions/workflows/ci.yml/badge.svg)](https://github.com/pr0d1r2/nix-lefthook-justfile-alphabetical/actions/workflows/ci.yml)
+[![CI](https://github.com/pr0d1r2/nix-lefthook-justfile-alphabetical/actions/workflows/ci.yml/badge.svg)](https://github.com/pr0d1r2/nix-lefthook-justfile-alphabetical/actions/workflows/ci.yml) [![NixOS 26.05](https://img.shields.io/badge/NixOS-26.05-blue.svg?logo=nixos)](https://nixos.org)
 
 > This code is LLM-generated and validated through an automated integration process using [lefthook](https://github.com/evilmartians/lefthook) git hooks, [bats](https://github.com/bats-core/bats-core) unit tests, and GitHub Actions CI.
 
 Lefthook-compatible [justfile alphabetical recipe order](https://github.com/casey/just) wrapper, packaged as a Nix flake.
 
 Checks that justfile recipes are in alphabetical order. Skips `[private]` recipes. Exits 0 when no justfiles are found.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  consumer["consumer lefthook.yml"] -->|"remotes"| remote["lefthook-remote.yml"]
+  remote -->|"pre-commit: justfile → {staged_files}"| lefthook_justfile_alphabetical["lefthook-justfile-alphabetical"]
+  remote -->|"pre-push: justfile → {push_files}"| lefthook_justfile_alphabetical["lefthook-justfile-alphabetical"]
+  lefthook_justfile_alphabetical -->|"runs"| tool["justfile alphabetical recipe order"]
+  lefthook_justfile_alphabetical -->|"exit status"| consumer
+```
 
 ## Usage
 
@@ -77,6 +88,19 @@ If not using direnv, enter the shell manually:
 ```bash
 nix develop
 bats tests/unit/
+```
+
+### Development architecture
+
+```mermaid
+flowchart LR
+  envrc[".envrc"] -->|"use flake"| flake["flake.nix"]
+  flake -->|"mkConsumerFlake"| sas["set-and-setting"]
+  flake -->|"devShell"| shell["dev shell"]
+  shell -->|"on entry"| devsh["dev.sh"]
+  sas -->|"assembled hooks"| lh["lefthook.yml"]
+  lh -->|"pre-commit / pre-push"| checks["linters, bats, nix flake check"]
+  ci[".github/workflows/ci.yml"] -->|"guardrails.yml"| checks
 ```
 
 ## License
