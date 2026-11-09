@@ -9,6 +9,11 @@ setup() {
     REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/../.." && pwd)"
 }
 
+@test "CI reusable workflows are pinned to full commit SHAs" {
+    run grep -E '^    uses: .+@[0-9a-f]{40}$' "$REPO_ROOT/.github/workflows/ci.yml"
+    assert_success
+}
+
 @test "flake exports the default package on every system" {
     run --separate-stderr nix --extra-experimental-features 'nix-command flakes' eval \
         "$REPO_ROOT#packages" \
