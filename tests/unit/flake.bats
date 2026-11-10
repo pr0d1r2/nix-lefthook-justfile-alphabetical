@@ -10,7 +10,19 @@ setup() {
 }
 
 @test "CI reusable workflows are pinned to full commit SHAs" {
-    run grep -E '^    uses: .+@[0-9a-f]{40}$' "$REPO_ROOT/.github/workflows/ci.yml"
+    run awk '
+        /^    uses:/ {
+            value = $0
+            sub(/^[[:space:]]*uses:[[:space:]]*/, "", value)
+            sub(/[[:space:]]+#.*/, "", value)
+            gsub(/[[:space:]]/, "", value)
+            gsub(/"/, "", value)
+            gsub(/\047/, "", value)
+            if (value !~ /.+@[0-9a-f]{40}$/) invalid = 1
+            found = 1
+        }
+        END { exit (!found || invalid) }
+    ' "$REPO_ROOT/.github/workflows/ci.yml"
     assert_success
 }
 
