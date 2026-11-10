@@ -34,6 +34,20 @@ setup() {
     assert_output "true"
 }
 
+@test "locked nixpkgs contains fixed ruby and brotli versions" {
+    nixpkgs_rev="$(jq -r '.nodes.nixpkgs.locked.rev' "$REPO_ROOT/flake.lock")"
+
+    run --separate-stderr nix eval --raw \
+        "github:NixOS/nixpkgs/$nixpkgs_rev#ruby.version"
+    assert_success
+    assert_output "3.4.12"
+
+    run --separate-stderr nix eval --raw \
+        "github:NixOS/nixpkgs/$nixpkgs_rev#brotli.version"
+    assert_success
+    assert_output "1.2.1"
+}
+
 @test "default package runs lefthook-justfile-alphabetical" {
     run --separate-stderr nix --extra-experimental-features 'nix-command flakes' eval --raw \
         "$REPO_ROOT#packages" \
