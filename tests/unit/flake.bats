@@ -11,7 +11,7 @@ setup() {
 
 @test "CI reusable workflows are pinned to full commit SHAs" {
     run awk '
-        /^    uses:/ {
+        /^[[:space:]]+uses:/ {
             value = $0
             sub(/^[[:space:]]*uses:[[:space:]]*/, "", value)
             sub(/[[:space:]]+#.*/, "", value)
