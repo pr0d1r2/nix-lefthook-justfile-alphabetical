@@ -26,6 +26,31 @@ setup() {
     assert_success
 }
 
+@test "CI workflow pin check rejects malformed references" {
+    for revision in \
+        "" \
+        "ABCDEF0123456789ABCDEF0123456789ABCDEF01" \
+        "abcdef0123456789abcdef0123456789abcdef0" \
+        "abcdef0123456789abcdef0123456789abcdef012" \
+        "abcdef0123456789abcdef0123456789abcdef01@extra"; do
+        printf '    uses: owner/action@%s\n' "$revision" > "$BATS_TEST_TMPDIR/workflow.yml"
+        run awk '
+            /^[[:space:]]+uses:/ {
+                value = $0
+                sub(/^[[:space:]]*uses:[[:space:]]*/, "", value)
+                sub(/[[:space:]]+#.*/, "", value)
+                gsub(/[[:space:]]/, "", value)
+                gsub(/"/, "", value)
+                gsub(/\047/, "", value)
+                if (split(value, parts, "@") != 2 || length(parts[1]) == 0 || length(parts[2]) != 40 || parts[2] !~ /^[0-9a-f]+$/) invalid = 1
+                found = 1
+            }
+            END { exit (!found || invalid) }
+        ' "$BATS_TEST_TMPDIR/workflow.yml"
+        assert_failure
+    done
+}
+
 @test "flake exports the default package on every system" {
     run --separate-stderr nix --extra-experimental-features 'nix-command flakes' eval \
         "$REPO_ROOT#packages" \
