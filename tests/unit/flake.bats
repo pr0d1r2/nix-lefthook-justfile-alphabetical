@@ -18,8 +18,7 @@ setup() {
             gsub(/[[:space:]]/, "", value)
             gsub(/"/, "", value)
             gsub(/\047/, "", value)
-            split(value, parts, "@")
-            if (length(parts[1]) == 0 || length(parts[2]) != 40 || parts[2] !~ /^[0-9a-f]+$/) invalid = 1
+            if (split(value, parts, "@") != 2 || length(parts[1]) == 0 || length(parts[2]) != 40 || parts[2] !~ /^[0-9a-f]+$/) invalid = 1
             found = 1
         }
         END { exit (!found || invalid) }
