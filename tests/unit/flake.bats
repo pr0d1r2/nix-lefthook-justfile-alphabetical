@@ -43,6 +43,12 @@ check_workflow_pins() {
     done
 }
 
+@test "CI workflow pin check rejects workflows without uses entries" {
+    printf 'name: workflow\n' > "$BATS_TEST_TMPDIR/workflow.yml"
+    run check_workflow_pins "$BATS_TEST_TMPDIR/workflow.yml"
+    assert_failure
+}
+
 @test "flake exports the default package on every system" {
     run --separate-stderr nix --extra-experimental-features 'nix-command flakes' eval \
         "$REPO_ROOT#packages" \
