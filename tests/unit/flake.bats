@@ -9,8 +9,8 @@ setup() {
     REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/../.." && pwd)"
 }
 
-@test "CI reusable workflows are pinned to full commit SHAs" {
-    run awk '
+check_workflow_pins() {
+    awk '
         /^[[:space:]]+uses:/ {
             value = $0
             sub(/^[[:space:]]*uses:[[:space:]]*/, "", value)
@@ -22,7 +22,11 @@ setup() {
             found = 1
         }
         END { exit (!found || invalid) }
-    ' "$REPO_ROOT/.github/workflows/ci.yml"
+    ' "$1"
+}
+
+@test "CI reusable workflows are pinned to full commit SHAs" {
+    run check_workflow_pins "$REPO_ROOT/.github/workflows/ci.yml"
     assert_success
 }
 
@@ -34,19 +38,7 @@ setup() {
         "abcdef0123456789abcdef0123456789abcdef012" \
         "abcdef0123456789abcdef0123456789abcdef01@extra"; do
         printf '    uses: owner/action@%s\n' "$revision" > "$BATS_TEST_TMPDIR/workflow.yml"
-        run awk '
-            /^[[:space:]]+uses:/ {
-                value = $0
-                sub(/^[[:space:]]*uses:[[:space:]]*/, "", value)
-                sub(/[[:space:]]+#.*/, "", value)
-                gsub(/[[:space:]]/, "", value)
-                gsub(/"/, "", value)
-                gsub(/\047/, "", value)
-                if (split(value, parts, "@") != 2 || length(parts[1]) == 0 || length(parts[2]) != 40 || parts[2] !~ /^[0-9a-f]+$/) invalid = 1
-                found = 1
-            }
-            END { exit (!found || invalid) }
-        ' "$BATS_TEST_TMPDIR/workflow.yml"
+        run check_workflow_pins "$BATS_TEST_TMPDIR/workflow.yml"
         assert_failure
     done
 }
